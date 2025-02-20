@@ -17,8 +17,19 @@ TODO:
     especially the for loop, frame_path, mask_path
     using the same check the __len__ and implement the __getitem__
 '''
+'''
+the below part should also include the presence of mutiple mask and  video directories and
+each of them should be added to the frame_paths and mask_paths. 
+
+
+'''
 
 class SurgiSeg(Dataset):
+    """Dataset class for training and create DataLoaders
+
+    Args:
+        Dataset (torch.utils.data): pytorch dataset class
+    """
     def __init__(self, mask_video_dir_path, video_path, transform=None):
         super().__init__()
         self.video_path = video_path
@@ -27,7 +38,8 @@ class SurgiSeg(Dataset):
 
         if transform == None:
              self.transforms = transforms.Compose([
-                  transforms.Resize((256,256)),
+                  transforms.Resize((256,256)), # might have to change the value from 256 X 256 to 480 X 854
+                #   transforms.Resize((480, 854)),
                   transforms.ToTensor(),
              ])
         else:
@@ -61,7 +73,4 @@ class SurgiSeg(Dataset):
             
 if __name__=='__main__':
     dataset = SurgiSeg(mask_video_dir_path='dataset/mask/VID26/part1', video_path='dataset/VID26/part1')
-    image, mask = dataset[0]
-
-    print(image)
-    print(mask)
+    dataset[91]
