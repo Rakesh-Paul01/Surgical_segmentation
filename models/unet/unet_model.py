@@ -2,7 +2,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch
 
-from unet.unet_parts import DoubleConv, Down, Up, OutConv
+from models.unet.unet_parts import DoubleConv, Down, Up, OutConv
+# from unet_parts import *
 
 class Unet(nn.Module):
     def __init__(self, n_channels, n_classes, bilinear= False):
