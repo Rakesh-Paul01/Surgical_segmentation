@@ -1,7 +1,7 @@
 import os
 import cv2
 import numpy as np
-
+import shutil
 
 def create_log(base_directory):
     part_directories = [os.path.join(base_directory, dir) for dir in os.listdir(base_directory)]
@@ -71,37 +71,40 @@ def create_blank(mask_dir):
                 blank_frame = np.zeros(frame_shape, dtype=np.uint8)
                 cv2.imwrite(frame_path, blank_frame)
 
-# if __name__=='__main__':
-#     vidoe_dir = os.listdir('dataset/Masks')
-#     # print(vidoe_dir)
-#     for vid in vidoe_dir:
-#         create_blank(os.path.join('dataset/Masks', vid))
 
+# Removes the parts(no longer part1, part2 etc BS)
+def merge_part_images(video_dir="video", valid_extensions={".png", ".jpg"}):
+    """
+    Moves all images from subdirectories inside `video_dir` to the main directory.
+    Removes empty subdirectories after moving the images.
+    
+    Args:
+        video_dir (str): The root directory containing subdirectories with images.
+        valid_extensions (set): A set of valid image extensions (e.g., {".png", ".jpg"}).
+    """
+    # Get all subdirectories inside 'video'
+    print(video_dir)
+    parts = [d for d in os.listdir(video_dir) if os.path.isdir(os.path.join(video_dir, d))]
 
+    # Move all images from subdirectories to the video directory
+    for part in parts:
+        part_path = os.path.join(video_dir, part)
+        for img in sorted(os.listdir(part_path)):  # Sort to maintain order
+            img_path = os.path.join(part_path, img)
+            if os.path.isfile(img_path) and os.path.splitext(img)[1].lower() in valid_extensions:
+                shutil.move(img_path, os.path.join(video_dir, img))
 
-        # for 
-        # check_frames(video_root= os.path.join(video_root, vid), mask_root=os.path.join(mask_root, vid))
+    # Remove empty subdirectories
+    for part in parts:
+        part_path = os.path.join(video_dir, part)
+        if os.path.exists(part_path) and not os.listdir(part_path):
+            os.rmdir(part_path)
 
+if __name__ == '__main__':
+    videos = 'dataset/videos_batched'
+    mask = 'dataset/Masks'
 
-    # print(video_names)
-    # print(mask_names)
-
-    # for vid in mask_names:
-    #     # print(vid)
-    #     if vid not in video_names:
-    #         print(vid)
-
-# if __name__=='__main__':                                                                                                                                                                                           
-#     vidoe_dir = os.listdir('TestWithNewAnnotations22')                                                                                                                                                             
-#     # print(vidoe_dir)                                                                                                                                                                                             
-#     for vid in vidoe_dir:                                                                                                                                                                                          
-#         create_blank(os.path.join('TestWithNewAnnotations22', vid))                                                                                                                                                
-                                                                         
-
-
-if __name__== '__main__':
-    # base_directory = 'dataset/mask/VID26'
-    # create_log(base_directory=base_directory)
-
-    # check_video_names(video_root='dataset/videos_batched', mask_root='dataset/Masks')
-    check_video(video_root='dataset/videos_batched', mask_root='dataset/Masks')
+    for dir in os.listdir(videos):
+        merge_part_images(video_dir=os.path.join(videos, dir))
+        merge_part_images(video_dir=os.path.join(mask, dir))
+        
