@@ -7,6 +7,8 @@ def create_log(base_directory):
     part_directories = [os.path.join(base_directory, dir) for dir in os.listdir(base_directory)]
     part_directories = sorted(part_directories)
 
+    print(f'the total number of videos are {len(part_directories)}')
+
     for dir in part_directories:
         frames = sorted(os.listdir(dir))
         first_frame_of_part = frames[0]
